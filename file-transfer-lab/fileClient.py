@@ -5,6 +5,9 @@ import socket, sys, re
 sys.path.append("../lib")    # for params
 import params
 
+from framedSock import framedSend, framedReceive
+
+
 #First get input from user
 command = input("Please enter the command for file transfer. ")
 
@@ -14,13 +17,14 @@ print ("Size in bytes is '%d'" % size)
 
 switchesVarDefaults = (
     (('-s', '--server'), 'server', "127.0.0.1:50001"),
+    (('-d', '--debug'), "debug", False), # boolean (set if present)
     (('-?', '--usage'), "usage", False), #boolean (set if present)
     )
 
 progname = "framedClient"
 paramMap = params.parseParams(switchesVarDefaults)
 
-server, usage = paramMap["server"], paramMap["usage"]
+server, usage, debug = paramMap["server"], paramMap["usage"], paramMap["debug"]
 
 if usage:
     params.usage()
@@ -56,20 +60,19 @@ if s is None:
     print("Could not open Socket")
     sys.exit(1)
 
-s.send(command.encode())
+#s.send(command.encode())
 
-data = s.recv(1024).decode()
-print("Received '%s'" % data)
 print("Sending '%s'" % command)
+framedSend(s, command.encode('UTF-8'), debug)
+print("reveived:", framedReceive(s, debug))
+#s.send(command.encode())
 
-s.send(command.encode())
+#s.shutdown(socket.SHUT_WR) # no more ouput
 
-s.shutdown(socket.SHUT_WR) # no more ouput
-
-while 1:
-    data = s.recv(1024).decode()
-    print("Received '%s'" % data)
-    if len(data) == 0:
-        break
-print("Zero length read. Closing")
-s.close()
+#while 1:
+ #   data = s.recv(1024).decode()
+  #  print("Received '%s'" % data)
+   # if len(data) == 0:
+    #    break
+#print("Zero length read. Closing")
+#s.close()
