@@ -8,9 +8,45 @@ import params
 from framedSock import framedSend, framedReceive
 
 
-#First get input from user
-command = input("Please enter the command for file transfer. ")
+#First get input from user, loop until a valid entry is selected
+command = input("Please enter the command for file transfer: ")
 
+
+
+# Loop to get valid entry
+while(True):
+
+#Check for correct information provided
+    wordSplit = command.split()
+    length = len(wordSplit)
+    if(length == 0):             # event nothing is entered
+        print("No commands entered.")
+        command = input("Please enter a valid command, or exit: ")
+        continue
+    if(length ==  1):           # if only one word is entered check for exit
+        if (command == "exit"): # Exit clause
+            print("Finished with file transfer.")
+            exit(1)
+        else:
+            print("Invalid command.")
+            command = input("Please enter a valid command, or exit: ")
+            continue
+    if(length > 2):           # if there are too many comands entered
+        print("Invalid command, it can only have 2 words.")
+        command = input("Please enter a calid command, or exit: ")
+        continue
+    commandPart = wordSplit[0]
+    commandFile = wordSplit[1]
+    print("first word is %s" % commandPart)
+    print("second word if %s" % commandFile)
+    if(commandPart == "put"): # Check to put document
+        print ("Valid command")
+        break
+    elif(commandPart == "get"): # Check to get a document
+        print("That functionality is not available yet")
+    
+    command = input("Please enter a new command or exit to finish: ")
+    
 print ("Command to transmit is '%s'" % command)
 size = sys.getsizeof(command)
 print ("Size in bytes is '%d'" % size)
