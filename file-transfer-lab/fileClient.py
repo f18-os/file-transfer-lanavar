@@ -3,7 +3,7 @@
 #File transfer client program
 import socket, sys, re
 sys.path.append("../lib")    # for params
-import params
+import params, os
 
 from framedSock import framedSend, framedReceive
 
@@ -46,6 +46,29 @@ while(True):
         print("That functionality is not available yet")
     
     command = input("Please enter a new command or exit to finish: ")
+
+
+# Check for a valid file to transfer
+if not os.path.isfile(commandFile):
+    print("File does not exist!")
+    exit(1)
+
+
+#Check for empty file
+sizeFile = os.path.getsize(commandFile)
+if (sizeFile == 0):
+    print("Zero size file!")
+    exit(1)
+
+
+# Check if file already exists in destination folder
+outputFile = "serverfiles/" + commandFile
+if os.path.isfile(outputFile):
+    print("File already exists as output!")
+    exit(1)
+
+
+
     
 print ("Command to transmit is '%s'" % command)
 size = sys.getsizeof(command)
