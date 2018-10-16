@@ -5,7 +5,7 @@ import socket, sys, re
 sys.path.append("../lib")    # for params
 import params, os
 
-from framedSock import framedSend, framedReceive
+from framedSock import framedSend, framedReceive, framedFileSend
 
 
 #First get input from user, loop until a valid entry is selected
@@ -38,7 +38,7 @@ while(True):
     commandPart = wordSplit[0]
     commandFile = wordSplit[1]
     print("first word is %s" % commandPart)
-    print("second word if %s" % commandFile)
+    print("second word is %s" % commandFile)
     if(commandPart == "put"): # Check to put document
         print ("Valid command")
         break
@@ -60,18 +60,15 @@ if (sizeFile == 0):
     print("Zero size file!")
     exit(1)
 
-
 # Check if file already exists in destination folder
 outputFile = "serverfiles/" + commandFile
 if os.path.isfile(outputFile):
     print("File already exists as output!")
     exit(1)
 
-
-
     
 print ("Command to transmit is '%s'" % command)
-size = sys.getsizeof(command)
+size = sys.getsizeof(commandFile)
 print ("Size in bytes is '%d'" % size)
 
 switchesVarDefaults = (
@@ -122,7 +119,10 @@ if s is None:
 #s.send(command.encode())
 
 print("Sending '%s'" % command)
-framedSend(s, command.encode('UTF-8'), debug)
+
+
+framedFileSend(s, commandFile.encode("utf-8"), outputFile.encode("utf-8"), debug)
+print("Done sending")
 print("reveived:", framedReceive(s, debug))
 #s.send(command.encode())
 
