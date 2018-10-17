@@ -1,7 +1,8 @@
 #! /usr/bin/env python3
 
-# Echo server program
+# Forked file send server program
 
+# import necessary utilities
 import socket, sys, re, os
 sys.path.append("../lib")       # for params
 import params
@@ -11,7 +12,6 @@ switchesVarDefaults = (
     (('-d', '--debug'), "debug", False), # boolean (set if present)
     (('-?', '--usage'), "usage", False), # boolean (set if present)
     )
-
 
 progname = "echoserver"
 paramMap = params.parseParams(switchesVarDefaults)
@@ -26,16 +26,13 @@ lsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 bindAddr = ("127.0.0.1", listenPort)
 lsock.bind(bindAddr)
 lsock.listen(5)
-#s.bind((listenAddr, listenPort))
-#s.listen(1)              # allow only one outstanding request
-# s is a factory for connected sockets
 print("Listeing on:", bindAddr)
 
 while True:
     sock, addr = lsock.accept()
-    
     from framedSock import framedSend, framedReceive
 
+    # Test for forking
     if not os.fork():
         print('new child process handling connection from', addr)
         while True:
@@ -45,4 +42,3 @@ while True:
                 if debug: print("child exiting")
                 sys.exit(0)
             framedSend(sock, payload.encode("utf-8"), debug)
-

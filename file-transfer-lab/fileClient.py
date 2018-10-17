@@ -1,22 +1,19 @@
 #! /usr/bin/env python3
+# File transfer client program
 
-#File transfer client program
+# Import necessaty elements
 import socket, sys, re
 sys.path.append("../lib")    # for params
 import params, os
-
 from framedSock import framedSend, framedReceive, framedFileSend
 
-
-#First get input from user, loop until a valid entry is selected
+# First get input from user, loop until a valid entry is selected
 command = input("Please enter the command for file transfer: ")
-
-
 
 # Loop to get valid entry
 while(True):
-
-#Check for correct information provided
+    # Check for correct information provided
+    # Split the imput
     wordSplit = command.split()
     length = len(wordSplit)
     if(length == 0):             # event nothing is entered
@@ -28,27 +25,31 @@ while(True):
             print("Finished with file transfer.")
             exit(1)
         else:
-            print("Invalid command.")
+            print("Invalid command.") # One word other than exit is entered
             command = input("Please enter a valid command, or exit: ")
             continue
     if(length > 2):           # if there are too many comands entered
         print("Invalid command, it can only have 2 words.")
         command = input("Please enter a valid command, or exit: ")
         continue
+
+    # If all the tests pass it splits the input to the command and the file name 
     commandPart = wordSplit[0]
     commandFile = wordSplit[1]
-    #print("first word is %s" % commandPart)
-    #print("second word is %s" % commandFile)
-    if(commandPart == "put"): # Check to put document
+    
+    # Checks if command was to put or get file and assigns a value.
+    if(commandPart == "put"): 
         print ("Valid command")
         choice = 1
         break
-    elif(commandPart == "get"): # Check to get a document
+    elif(commandPart == "get"):
         print("Valid command")
         choice = 2
         break
-    
+        
     command = input("Please enter a new command or exit to finish: ")
+
+# Checks choice to determine if the file locatinos need to be fixed
 if choice == 2:
     outputFile = commandFile
     commandFile = "serverfiles/"+outputFile
@@ -60,8 +61,7 @@ if not os.path.isfile(commandFile):
     print("File does not exist!")
     exit(1)
 
-
-#Check for empty file
+# Check for empty file
 sizeFile = os.path.getsize(commandFile)
 if (sizeFile == 0):
     print("Zero size file!")
@@ -71,11 +71,6 @@ if (sizeFile == 0):
 if os.path.isfile(outputFile):
     print("File already exists as output!")
     exit(1)
-
-    
-#print ("Command to transmit is '%s'" % command)
-size = sys.getsizeof(commandFile)
-#print ("Size in bytes is '%d'" % size)
 
 switchesVarDefaults = (
     (('-s', '--server'), 'server', "127.0.0.1:50001"),
@@ -90,7 +85,6 @@ server, usage, debug = paramMap["server"], paramMap["usage"], paramMap["debug"]
 
 if usage:
     params.usage()
-
 try:
     serverHost, serverPort = re.split(":", server)
     serverPort = int(serverPort)
@@ -122,22 +116,7 @@ if s is None:
     print("Could not open Socket")
     sys.exit(1)
 
-#s.send(command.encode())
-
-#print("Sending '%s'" % command)
-
-
+# Send the command with file name
 framedFileSend(s, commandFile.encode("utf-8"), outputFile.encode("utf-8"), debug)
 print("Done sending")
 print("reveived:", framedReceive(s, debug))
-#s.send(command.encode())
-
-#s.shutdown(socket.SHUT_WR) # no more ouput
-
-#while 1:
- #   data = s.recv(1024).decode()
-  #  print("Received '%s'" % data)
-   # if len(data) == 0:
-    #    break
-#print("Zero length read. Closing")
-#s.close()
