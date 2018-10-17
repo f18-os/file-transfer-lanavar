@@ -2,7 +2,7 @@
 
 # Echo server program
 
-import socket, sys, re
+import socket, sys, re, os
 sys.path.append("../lib")       # for params
 import params
 
@@ -31,22 +31,18 @@ lsock.listen(5)
 # s is a factory for connected sockets
 print("Listeing on:", bindAddr)
 
-sock, addr = lsock.accept()
-
-#conn, addr = s.accept()  # wait until incoming connection request (and accept it)
-print('Connection received from', addr)
-
-from framedSock import framedSend, framedReceive
-
-
 while True:
-    payload = framedReceive(sock, debug)
-    if debug: print("received: ", payload)
-    if not payload: break
+    sock, addr = lsock.accept()
+    
+    from framedSock import framedSend, framedReceive
 
-    framedSend(sock, payload.encode("utf-8"), debug)
+    if not os.fork():
+        print('new child process handling connection from', addr)
+        while True:
+            payload = framedReceive(sock, debug)
+            if debug: print("received: ", payload)
+            if not payload: 
+                if debug: print("child exiting")
+                sys.exit(0)
+            framedSend(sock, payload.encode("utf-8"), debug)
 
-#sendMsg = "Echoing %s" % data
- #   print("Received '%s', sending '%s'" % (data, sendMsg))
-  #  conn.send(sendMsg.encode())
-#conn.close()
