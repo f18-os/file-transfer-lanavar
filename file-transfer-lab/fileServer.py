@@ -43,8 +43,8 @@ while True:
     payload = framedReceive(sock, debug)
     if debug: print("received: ", payload)
     if not payload: break
-    payload += b"!"
-    framedSend(sock, payload, debug)
+
+    framedSend(sock, payload.encode("utf-8"), debug)
 
 #sendMsg = "Echoing %s" % data
  #   print("Received '%s', sending '%s'" % (data, sendMsg))

@@ -33,20 +33,27 @@ while(True):
             continue
     if(length > 2):           # if there are too many comands entered
         print("Invalid command, it can only have 2 words.")
-        command = input("Please enter a calid command, or exit: ")
+        command = input("Please enter a valid command, or exit: ")
         continue
     commandPart = wordSplit[0]
     commandFile = wordSplit[1]
-    print("first word is %s" % commandPart)
-    print("second word is %s" % commandFile)
+    #print("first word is %s" % commandPart)
+    #print("second word is %s" % commandFile)
     if(commandPart == "put"): # Check to put document
         print ("Valid command")
+        choice = 1
         break
     elif(commandPart == "get"): # Check to get a document
-        print("That functionality is not available yet")
+        print("Valid command")
+        choice = 2
+        break
     
     command = input("Please enter a new command or exit to finish: ")
-
+if choice == 2:
+    outputFile = commandFile
+    commandFile = "serverfiles/"+outputFile
+elif choice == 1:
+    outputFile = "serverfiles/" + commandFile
 
 # Check for a valid file to transfer
 if not os.path.isfile(commandFile):
@@ -61,15 +68,14 @@ if (sizeFile == 0):
     exit(1)
 
 # Check if file already exists in destination folder
-outputFile = "serverfiles/" + commandFile
 if os.path.isfile(outputFile):
     print("File already exists as output!")
     exit(1)
 
     
-print ("Command to transmit is '%s'" % command)
+#print ("Command to transmit is '%s'" % command)
 size = sys.getsizeof(commandFile)
-print ("Size in bytes is '%d'" % size)
+#print ("Size in bytes is '%d'" % size)
 
 switchesVarDefaults = (
     (('-s', '--server'), 'server', "127.0.0.1:50001"),
@@ -118,7 +124,7 @@ if s is None:
 
 #s.send(command.encode())
 
-print("Sending '%s'" % command)
+#print("Sending '%s'" % command)
 
 
 framedFileSend(s, commandFile.encode("utf-8"), outputFile.encode("utf-8"), debug)
